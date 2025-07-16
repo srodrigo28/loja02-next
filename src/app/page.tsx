@@ -1,10 +1,9 @@
 'use client'
 
-import { supabase } from '@/lib/lib/supabaseClient'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import {  useState } from 'react'
 
 const produtos = [
   {
@@ -37,10 +36,10 @@ export default function HomePage() {
     produto.nome.toLowerCase().includes(busca.toLowerCase())
   )
 
-  useEffect(() => {
-    const session = supabase.auth.getSession()
-    // Pode armazenar no Zustand/contexto se quiser
-  }, [])
+  // useEffect(() => {
+  //   const session = supabase.auth.getSession()
+  //   // Pode armazenar no Zustand/contexto se quiser
+  // }, [])
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 font-sans text-gray-800">

@@ -53,20 +53,20 @@ export default function AdicionarProdutoPage() {
       }
 
       // Busca métricas
-      const [prod, aval, vend] = await Promise.all([
-        supabase
-          .from('produtos')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', user.id),
-        supabase
-          .from('avaliacoes')
-          .select('id', { count: 'exact', head: true })
-          .eq('usuario_id', user.id),
-        supabase
-          .from('itens_pedido')
-          .select('quantidade', { count: 'exact', head: true })
-          .eq('usuario_id', user.id) // ajuste aqui se necessário
-      ])
+      // const [prod, aval, vend] = await Promise.all([
+      //   supabase
+      //     .from('produtos')
+      //     .select('id', { count: 'exact', head: true })
+      //     .eq('user_id', user.id),
+      //   supabase
+      //     .from('avaliacoes')
+      //     .select('id', { count: 'exact', head: true })
+      //     .eq('usuario_id', user.id),
+      //   supabase
+      //     .from('itens_pedido')
+      //     .select('quantidade', { count: 'exact', head: true })
+      //     .eq('usuario_id', user.id) // ajuste aqui se necessário
+      // ])
 
     }
 
@@ -109,7 +109,7 @@ export default function AdicionarProdutoPage() {
 
     for (const imagem of imagens) {
       const filePath = `image/${uuidv4()}-${imagem.name}`;
-      const { data, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("box")
         .upload(filePath, imagem);
 
