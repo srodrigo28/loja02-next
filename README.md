@@ -2,7 +2,8 @@
 * > Home
 <img src="./preview/home.png" alt="">
 
-* > Dashboard
+
+* > Dashboard 01
 <img src="./preview/dashboard.png" alt="">
 
 * > Doc
