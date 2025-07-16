@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentação SQL Completa - Loja Online</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1d4ed8', // Azul principal para títulos e destaque
+            secondary: '#0284c7', // Azul secundário para números em cards
+            background: '#f8fafc', // Fundo bem claro
+            cardBg: '#e0f2fe', // Fundo dos cards
+            codeBg: '#f1f5f9', // Fundo dos blocos de código
+            completedBg: '#bfdbfe', // Azul claro para seções concluídas (aproximado de bg-sky-400)
+            pendingBg: '#fee2e2', // Vermelho claro para seções pendentes (aproximado de bg-red-100)
+          },
+          fontFamily: {
+            sans: ['Inter', 'Arial', 'sans-serif'], // Usando Inter como fonte sans-serif padrão
+            mono: ['Fira Code', 'Menlo', 'monospace'], // Fonte para códigos, ideal para legibilidade
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Estilo adicional para posicionar o botão de copiar */
+    .code-block-container {
+      position: relative;
+    }
+    .copy-button {
+      position: absolute;
+      top: 0.75rem; /* 12px */
+      right: 0.75rem; /* 12px */
+      padding: 0.5rem 0.75rem; /* 8px 12px */
+      font-size: 0.875rem; /* 14px */
+      line-height: 1.25rem; /* 20px */
+      border-radius: 0.375rem; /* 6px */
+      cursor: pointer;
+      opacity: 0; /* Começa invisível */
+      transition: opacity 0.3s ease-in-out, background-color 0.2s ease-in-out;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #3b82f6; /* Tailwind blue-500 */
+      border: 1px solid #bfdbfe; /* Tailwind blue-200 */
+      font-weight: 500;
+    }
+    .code-block-container:hover .copy-button {
+      opacity: 1; /* Fica visível ao passar o mouse */
+    }
+    .copy-button:hover {
+      background-color: #dbeafe; /* Tailwind blue-100 */
+      color: #2563eb; /* Tailwind blue-600 */
+    }
+    .copy-button:active {
+      transform: translateY(1px); /* Pequeno efeito de clique */
+    }
+
+    /* Styles for the "Mark as Concluded" button */
+    .mark-concluded-button {
+      background-color: #fca5a5; /* Tailwind red-300 */
+      color: #7f1d1d; /* Tailwind red-900 */
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+      border: 1px solid #ef4444; /* Tailwind red-500 */
+    }
+    .mark-concluded-button:hover {
+      background-color: #ef4444; /* Tailwind red-500 */
+      color: white;
+    }
+    .mark-concluded-button.concluded {
+      background-color: #93c5fd; /* Tailwind blue-300 */
+      color: #1e40af; /* Tailwind blue-800 */
+      border: 1px solid #3b82f6; /* Tailwind blue-500 */
+    }
+    .mark-concluded-button.concluded:hover {
+      background-color: #60a5fa; /* Tailwind blue-400 */
+    }
+  </style>
+</head>
+<body class="font-sans antialiased bg-background text-gray-800 p-6 sm:p-8 md:p-12 leading-relaxed">
+
+  <header class="text-center mb-12">
+    <h1 class="text-5xl font-extrabold text-primary mb-4 animate-fade-in-down">
+      📄 Documentação SQL – Estrutura Detalhada da Loja Online
+    </h1>
+    <p class="text-xl text-gray-600">
+      Um guia completo para entender o banco de dados da nossa plataforma de e-commerce.
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 max-w-6xl mx-auto">
+    <div class="flex flex-col items-center justify-center bg-cardBg p-8 rounded-xl shadow-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+      <strong class="block text-6xl font-extrabold text-secondary mb-3">6</strong>
+      <span class="text-2xl text-blue-900 font-semibold">Tabelas</span>
+      <p class="text-gray-700 mt-2 text-sm">Estruturas fundamentais dos dados.</p>
+    </div>
+    <div class="flex flex-col items-center justify-center bg-cardBg p-8 rounded-xl shadow-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+      <strong class="block text-6xl font-extrabold text-secondary mb-3">7</strong>
+      <span class="text-2xl text-blue-900 font-semibold">Views</span>
+      <p class="text-gray-700 mt-2 text-sm">Consultas pré-definidas para insights.</p>
+    </div>
+    <div class="flex flex-col items-center justify-center bg-cardBg p-8 rounded-xl shadow-lg text-center transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+      <strong class="block text-6xl font-extrabold text-secondary mb-3">0</strong>
+      <span class="text-2xl text-blue-900 font-semibold">Triggers</span>
+      <p class="text-gray-700 mt-2 text-sm">Ações automatizadas no banco de dados.</p>
+    </div>
+  </div>
+
+  <hr class="my-16 border-t-2 border-gray-200 max-w-4xl mx-auto">
+
+  <main class="max-w-4xl mx-auto">
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="usuarios">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">1. Tabela</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">usuarios</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-usuarios">CREATE TABLE public.usuarios (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  nome TEXT,
+  email TEXT NOT NULL UNIQUE,
+  senha TEXT NOT NULL,
+  telefone TEXT,
+  avatar_url TEXT,
+  papel TEXT,
+  empresa_ref BIGINT,
+  user_id UUID REFERENCES auth.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  CONSTRAINT usuarios_empresa_ref_fkey FOREIGN KEY (empresa_ref) REFERENCES empresa (id)
+);</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="usuarios">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="produtos">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">2. Tabela</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">produtos</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-produtos">CREATE TABLE public.produtos (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  nome TEXT NOT NULL,
+  descricao TEXT,
+  preco NUMERIC(10,2),
+  categoria TEXT,
+  imagem_principal TEXT,
+  link_afiliado TEXT,
+  tipo TEXT DEFAULT 'proprio',
+  ativo BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="produtos">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="fotos_produtos">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">3. Tabela</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">fotos_produtos</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-fotos-produtos">CREATE TABLE public.fotos_produtos (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  produto_id BIGINT NOT NULL REFERENCES produtos(id) ON DELETE CASCADE,
+  url TEXT NOT NULL
+);</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="fotos_produtos">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="avaliacoes">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">4. Tabela</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">avaliacoes</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-avaliacoes">CREATE TABLE public.avaliacoes (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  produto_id BIGINT NOT NULL REFERENCES produtos(id) ON DELETE CASCADE,
+  usuario_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  nota INTEGER CHECK (nota >= 1 AND nota <= 5),
+  comentario TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  UNIQUE (produto_id, usuario_id)
+);</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="avaliacoes">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="pedidos">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">5. Tabela</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">pedidos</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-pedidos">CREATE TABLE pedidos (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  usuario_id UUID REFERENCES auth.users(id),
+  status TEXT DEFAULT 'pendente',
+  total NUMERIC(10,2),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="pedidos">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="itens_pedido">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">6. Tabela</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">itens_pedido</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-itens-pedido">CREATE TABLE itens_pedido (
+  id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+  pedido_id BIGINT REFERENCES pedidos(id) ON DELETE CASCADE,
+  produto_id BIGINT REFERENCES produtos(id),
+  quantidade INTEGER,
+  preco_unitario NUMERIC(10,2)
+);</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="itens_pedido">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <hr class="my-16 border-t-2 border-gray-200 max-w-4xl mx-auto">
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="vw_media_avaliacoes">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">7. View</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">vw_media_avaliacoes</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-media-avaliacoes">CREATE VIEW vw_media_avaliacoes AS
+SELECT
+  p.id AS produto_id,
+  p.nome,
+  COUNT(a.id) AS total_avaliacoes,
+  ROUND(AVG(a.nota)::numeric, 2) AS media_estrela
+FROM produtos p
+LEFT JOIN avaliacoes a ON a.produto_id = p.id
+GROUP BY p.id, p.nome;</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="vw_media_avaliacoes">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="vw_total_usuarios">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">8. View</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">vw_total_usuarios</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-total-usuarios">CREATE VIEW vw_total_usuarios AS
+SELECT COUNT(*) AS total_usuarios FROM usuarios;</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="vw_total_usuarios">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="vw_total_produtos">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">9. View</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">vw_total_produtos</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-total-produtos">CREATE VIEW vw_total_produtos AS
+SELECT COUNT(*) AS total_produtos FROM produtos;</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="vw_total_produtos">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="vw_total_produtos_por_categoria">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">10. View</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">vw_total_produtos_por_categoria</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-produtos-por-categoria">CREATE VIEW vw_total_produtos_por_categoria AS
+SELECT categoria, COUNT(*) AS total FROM produtos GROUP BY categoria;</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="vw_total_produtos_por_categoria">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="vw_total_produtos_novos">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">11. View</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">vw_total_produtos_novos</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-produtos-novos">CREATE VIEW vw_total_produtos_novos AS
+SELECT COUNT(*) AS total_novos FROM produtos WHERE tipo = 'novo';</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="vw_total_produtos_novos">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="vw_total_produtos_usados">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">12. View</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">vw_total_produtos_usados</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-produtos-usados">CREATE VIEW vw_total_produtos_usados AS
+SELECT COUNT(*) AS total_usados FROM produtos WHERE tipo = 'usado';</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="vw_total_produtos_usados">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-primary" data-section-id="vw_total_produtos_vendidos">
+      <h2 class="text-3xl font-bold text-primary mb-5 flex items-center">
+        <span class="mr-3">13. View</span> <code class="bg-codeBg text-gray-800 px-3 py-1 rounded-md text-xl font-mono border border-gray-300">vw_total_produtos_vendidos</code>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-produtos-vendidos">CREATE VIEW vw_total_produtos_vendidos AS
+SELECT SUM(quantidade) AS total_vendidos FROM itens_pedido;</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="vw_total_produtos_vendidos">Marcar como Concluído</button>
+      </div>
+    </section>
+
+    <hr class="my-16 border-t-2 border-gray-200 max-w-4xl mx-auto">
+
+    <section class="mb-12 p-8 bg-white rounded-lg shadow-lg border-l-4 border-purple-600" data-section-id="testes">
+      <h2 class="text-3xl font-bold text-purple-700 mb-5 flex items-center">
+        <span class="mr-3">🎯 Testes de Inserção e Limpeza</span>
+      </h2>
+      <div class="code-block-container">
+        <pre class="bg-codeBg p-6 rounded-lg overflow-x-auto text-sm font-mono leading-relaxed shadow-inner border border-gray-200"><code id="code-testes">-- Inserts de teste
+-- Usuário de exemplo
+INSERT INTO usuarios (nome, email, senha, telefone, avatar_url, papel)
+VALUES
+  ('João Admin', 'admin@teste.com', 'senha123', '69999999999', 'https://exemplo.com/avatar1.png', 'admin'),
+  ('Maria Usuária', 'maria@teste.com', 'senha456', '69999999988', 'https://exemplo.com/avatar2.png', 'user');
+
+-- Produtos de exemplo
+INSERT INTO produtos (nome, descricao, preco, categoria, imagem_principal, tipo)
+VALUES
+  ('Fone de Ouvido', 'Fone com Bluetooth e som limpo', 199.99, 'Eletrônicos', 'https://exemplo.com/fone.jpg', 'novo'),
+  ('Notebook Usado', 'Notebook semi-novo com SSD', 2499.90, 'Informática', 'https://exemplo.com/notebook.jpg', 'usado');
+
+-- Fotos dos produtos
+INSERT INTO fotos_produtos (produto_id, url)
+VALUES
+  (1, 'https://exemplo.com/fone1.jpg'),
+  (1, 'https://exemplo.com/fone2.jpg'),
+  (2, 'https://exemplo.com/notebook1.jpg');
+
+-- Avaliações
+INSERT INTO avaliacoes (produto_id, usuario_id, nota, comentario)
+VALUES
+  (1, '00000000-0000-0000-0000-000000000000', 5, 'Produto ótimo!'),
+  (2, '00000000-0000-0000-0000-000000000000', 4, 'Bom custo-benefício.');
+
+-- Pedidos
+INSERT INTO pedidos (usuario_id, status, total)
+VALUES
+  ('00000000-0000-0000-0000-000000000000', 'pago', 199.99);
+
+-- Itens do pedido
+INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario)
+VALUES
+  (1, 1, 1, 199.99);
+
+-- Limpar dados de teste (DELETE)
+-- ATENÇÃO: Use com cuidado em ambiente real
+-- DELETE FROM itens_pedido;
+-- DELETE FROM pedidos;
+-- DELETE FROM avaliacoes;
+-- DELETE FROM fotos_produtos;
+-- DELETE FROM produtos;
+-- DELETE FROM usuarios;</code></pre>
+      </div>
+      <div class="flex justify-end mt-4">
+        <button class="mark-concluded-button" data-section-id="testes">Marcar como Concluído</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center text-gray-500 text-sm mt-20 pt-8 border-t border-gray-200">
+    <p>&copy; 2025 Documentação SQL Loja Online. Todos os direitos reservados.</p>
+    <p>Criado com ❤️ e Tailwind CSS.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Copy button functionality (existing)
+      const codeBlockContainers = document.querySelectorAll('.code-block-container');
+
+      codeBlockContainers.forEach(container => {
+        const pre = container.querySelector('pre');
+        const code = container.querySelector('code');
+
+        if (pre && code) {
+          const copyButton = document.createElement('button');
+          copyButton.textContent = 'Copiar';
+          copyButton.classList.add('copy-button');
+          container.appendChild(copyButton);
+
+          copyButton.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(code.textContent);
+              const originalText = copyButton.textContent;
+              copyButton.textContent = 'Copiado!';
+              setTimeout(() => {
+                copyButton.textContent = originalText;
+              }, 2000);
+            } catch (err) {
+              console.error('Falha ao copiar o texto: ', err);
+              alert('Erro ao copiar o código. Por favor, copie manualmente.');
+            }
+          });
+        }
+      });
+
+      // Mark as Concluded functionality (new)
+      const sections = document.querySelectorAll('main section');
+      const localStorageKey = 'concludedSections';
+      let concludedSections = JSON.parse(localStorage.getItem(localStorageKey)) || {};
+
+      const updateSectionStyle = (sectionId, isConcluded) => {
+        const section = document.querySelector(`[data-section-id="${sectionId}"]`);
+        if (section) {
+          if (isConcluded) {
+            section.classList.remove('bg-white', 'border-primary');
+            section.classList.add('bg-completedBg', 'border-sky-400'); // Use tailwind's sky-400 directly or your custom completedBg
+            section.querySelector('.mark-concluded-button').textContent = 'Concluído';
+            section.querySelector('.mark-concluded-button').classList.add('concluded');
+          } else {
+            section.classList.remove('bg-completedBg', 'border-sky-400');
+            section.classList.add('bg-white', 'border-primary');
+            section.querySelector('.mark-concluded-button').textContent = 'Marcar como Concluído';
+            section.querySelector('.mark-concluded-button').classList.remove('concluded');
+          }
+        }
+      };
+
+      // Apply initial state from Local Storage
+      sections.forEach(section => {
+        const sectionId = section.dataset.sectionId;
+        if (concludedSections[sectionId]) {
+          updateSectionStyle(sectionId, true);
+        } else {
+          // Set initial pending color if not concluded
+          section.classList.add('bg-pendingBg'); // Apply initial pending background
+          section.querySelector('.mark-concluded-button').textContent = 'Marcar como Concluído';
+          section.querySelector('.mark-concluded-button').classList.remove('concluded');
+        }
+      });
+
+      // Add event listeners to "Mark as Concluded" buttons
+      const markConcludedButtons = document.querySelectorAll('.mark-concluded-button');
+      markConcludedButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const sectionId = button.dataset.sectionId;
+          const isConcluded = !concludedSections[sectionId]; // Toggle status
+
+          concludedSections[sectionId] = isConcluded;
+          localStorage.setItem(localStorageKey, JSON.stringify(concludedSections));
+
+          updateSectionStyle(sectionId, isConcluded);
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

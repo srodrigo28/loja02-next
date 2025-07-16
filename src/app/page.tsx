@@ -1,103 +1,135 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { supabase } from '@/lib/lib/supabaseClient'
+import { motion } from 'framer-motion'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+const produtos = [
+  {
+    id: 1,
+    nome: 'Camisa Estilosa',
+    preco: 89.90,
+    descricao: 'Camisa 100% algodão, super confortável.',
+    imagem: 'https://m.media-amazon.com/images/I/511o8E0vJIL._AC_SX679_.jpg'
+  },
+  {
+    id: 2,
+    nome: 'Tênis Moderno',
+    preco: 199.99,
+    descricao: 'Tênis com design esportivo e casual.',
+    imagem: 'https://imgnike-a.akamaihd.net/1300x1300/028980ILA1.jpg'
+  },
+  {
+    id: 3,
+    nome: 'Relógio Digital',
+    preco: 299.90,
+    descricao: 'Relógio com pulseira de silicone e cronômetro.',
+    imagem: 'https://m.media-amazon.com/images/I/61W8p4m8qLL._AC_SX679_.jpg'
+  }
+]
+
+export default function HomePage() {
+  const [busca, setBusca] = useState('')
+
+  const produtosFiltrados = produtos.filter(produto =>
+    produto.nome.toLowerCase().includes(busca.toLowerCase())
+  )
+
+  useEffect(() => {
+    const session = supabase.auth.getSession()
+    // Pode armazenar no Zustand/contexto se quiser
+  }, [])
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen flex flex-col bg-gray-50 font-sans text-gray-800">
+      {/* MENU STICKY */}
+      <header className="sticky top-0 z-50 bg-sky-100 shadow border-b">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {/* Logo */}
+          <div className="text-2xl font-extrabold text-blue-600 tracking-tight">
+            Minha<span className="text-gray-900">Loja</span>
+          </div>
+
+          {/* Campo de busca */}
+          <input
+            type="text"
+            placeholder="Buscar produtos..."
+            value={busca}
+            onChange={e => setBusca(e.target.value)}
+            className="w-full md:w-[400px] px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition"
+          />
+
+          {/* Ações (login/cadastro) */}
+          <div className="flex gap-3 items-center">
+            <Link href="/login" passHref>
+              <button className="text-blue-600 font-medium hover:underline transition">Login</button>
+            </Link>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow-md transition">
+              Cadastrar
+            </button>
+          </div>
         </div>
+      </header>
+
+
+      {/* CONTEÚDO */}
+      <main className="flex-1 max-w-6xl mt-10 mx-auto p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {produtosFiltrados.map((produto, i) => (
+          <motion.div
+            key={produto.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="bg-white rounded-xl h-[400px] shadow-md overflow-hidden transform transition-all 
+    duration-300 ease-in-out hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1 flex flex-col"
+          >
+            <div className="relative w-full h-[280px]">
+              <Image
+                src={produto.imagem}
+                alt={produto.nome}
+                fill
+                className="object-cover"
+              />
+            </div>
+
+            <div className="p-3 flex flex-col gap-1 h-[120px]">
+              <h2 className="text-base font-semibold text-gray-800 truncate">{produto.nome}</h2>
+              <p className="text-blue-600 text-sm font-bold">R$ {produto.preco.toFixed(2)}</p>
+              <p className="text-xs text-gray-500 line-clamp-2">{produto.descricao}</p>
+            </div>
+          </motion.div>
+
+        ))}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* RODAPÉ */}
+      <footer className="bg-white border-t mt-12 text-gray-600 text-sm">
+        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-start gap-6">
+          <div>
+            <h3 className="text-blue-600 font-bold mb-2 text-lg">MinhaLoja</h3>
+            <p className="text-gray-500">© {new Date().getFullYear()} MinhaLoja. Todos os direitos reservados.</p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Contatos</h4>
+            <ul className="space-y-1">
+              <li>Email: contato@minhaloja.com</li>
+              <li>WhatsApp: (69) 99999-9999</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Redes Sociais</h4>
+            <div className="flex gap-4">
+              <a href="#" className="hover:text-blue-600">Instagram</a>
+              <a href="#" className="hover:text-blue-600">Facebook</a>
+              <a href="#" className="hover:text-blue-600">Twitter</a>
+              <a href="/doc.html" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">Documentação</a>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
