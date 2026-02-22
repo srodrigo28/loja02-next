@@ -1,62 +1,58 @@
+# syntax=docker/dockerfile:1.6
+
 # ==========================================
-# ESTÁGIO 1: DEPENDÊNCIAS (Base)
+# STAGE 1: DEPENDENCIAS
 # ==========================================
 FROM node:20-alpine AS deps
-# Adiciona biblioteca C necessária para pacotes nativos em imagens Alpine
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copia os gerenciadores de pacote. 
-# Se usar yarn ou pnpm, altere aqui. Assumindo NPM pelo seu padrão.
-COPY package.json package-lock.json* ./
-RUN npm ci
+COPY package.json ./
+COPY package-lock.json* yarn.lock* pnpm-lock.yaml* ./
+
+RUN if [ -f package-lock.json ]; then npm ci; \
+    elif [ -f yarn.lock ]; then corepack enable && yarn install --frozen-lockfile; \
+    elif [ -f pnpm-lock.yaml ]; then corepack enable && pnpm install --frozen-lockfile; \
+    else echo "Nenhum lockfile encontrado (package-lock.json, yarn.lock, pnpm-lock.yaml)." && exit 1; \
+    fi
 
 # ==========================================
-# ESTÁGIO 2: BUILDER (Compilação)
+# STAGE 2: BUILD
 # ==========================================
 FROM node:20-alpine AS builder
 WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Desabilita telemetria do Next.js para economizar processamento
-ENV NEXT_TELEMETRY_DISABLED=1
+RUN if [ -f package-lock.json ]; then npm run build; \
+    elif [ -f yarn.lock ]; then corepack enable && yarn build; \
+    else corepack enable && pnpm build; \
+    fi
 
-# Roda o processo de build do Next.js
-RUN npm run build
+# Garante que a pasta public nao quebre o COPY final quando estiver ausente.
+RUN mkdir -p /app/.next/standalone/public && \
+    if [ -d /app/public ]; then cp -R /app/public/. /app/.next/standalone/public/; fi
 
 # ==========================================
-# ESTÁGIO 3: RUNNER (Produção Final)
+# STAGE 3: RUNNER
 # ==========================================
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-# Criação de um usuário sem privilégios root (Regra de Segurança!)
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN addgroup -S nodejs -g 1001 && adduser -S nextjs -u 1001 -G nodejs
 
-# Copia a pasta pública
-COPY --from=builder /app/public ./public
-
-# Configura permissão para o cache do Next.js
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# A MÁGICA ACONTECE AQUI: 
-# Copia apenas o núcleo "Standalone" gerado no Passo 1 e os estáticos
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Muda para o usuário seguro
+RUN mkdir -p .next && chown -R nextjs:nodejs .next
+
 USER nextjs
-
-# Expõe a porta que o container vai falar com o Nginx
 EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
-
-# O Next.js 'standalone' gera um server.js puro, não precisamos de npm start!
 CMD ["node", "server.js"]
