@@ -26,6 +26,13 @@ const produtos = [
     preco: 299.90,
     descricao: 'Relógio com pulseira de silicone e cronômetro.',
     imagem: 'https://m.media-amazon.com/images/I/61W8p4m8qLL._AC_SX679_.jpg'
+  },
+  {
+    id: 4,
+    nome: 'Relógio Digital',
+    preco: 299.90,
+    descricao: 'Relógio com pulseira de silicone e cronômetro.',
+    imagem: 'https://m.media-amazon.com/images/I/61W8p4m8qLL._AC_SX679_.jpg'
   }
 ]
 
